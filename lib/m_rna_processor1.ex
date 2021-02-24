@@ -31,7 +31,7 @@ defmodule MRnaProcessor1 do
   defp validate_chars(sequence) do
     case Regex.match?(~r/^[UAGC]*$/, sequence) do
       true -> :ok
-      _ -> {:error, "Invalid DNA"}
+      _ -> {:error, "Invalid DNA: #{sequence}"}
     end
   end
 

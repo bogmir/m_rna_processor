@@ -1,12 +1,15 @@
 defmodule MRnaProcessor2 do
 
   @stop_codons ["UAA", "UAG", "UGA"]
-
   def get_genes(input_data_url) do
     IO.puts("Starts processing input...")
 
-    with [] <- do_get_genes(input_data_url) do
-      {:ok, "Process ended successfully."}
+    case do_get_genes(input_data_url) do
+      {_, []} -> {:ok, "Process ended successfully."}
+      {_, list = [_ | _]} ->
+        trace = list |> Enum.reverse() |> get_trace(3)
+        {:error, "Unexpected end of gene", trace}
+      {:error, err, trace} -> {:error, err, trace}
     end
   end
 
@@ -16,20 +19,33 @@ defmodule MRnaProcessor2 do
     |> Stream.flat_map(&String.codepoints/1)
     |> Stream.chunk_every(3)
     |> Stream.map(&Enum.join/1)
-    |> Enum.reduce_while([], fn codon, acc ->
-        with :ok <- validate_chars(codon), :ok <- validate_end(codon)
+    |> Enum.reduce_while({1, []}, fn codon, {counter, acc} ->
+        with :ok <- validate_codon(codon)
         do
           case codon in @stop_codons do
-            true ->
-              if (Enum.any?(acc, &(&1 not in @stop_codons))) do    # repeated STOP codons discarded
-                Enum.reverse(["STOP(#{codon})" | acc]) |> IO.inspect(label: "gene")
+            true -> #gene may be captured at this point
+              if (Enum.any?(acc, &(&1 not in @stop_codons))) do # repeated STOP codons discarded here
+                Enum.reverse(["STOP(#{codon})" | acc]) |> IO.inspect(label: "gene #{counter}")
               end
-            false -> {:cont, [codon | acc] }
+              {:cont, { counter + 1, [] }}
+            false -> {:cont, { counter, [codon | acc] }}
           end
         else
-          {:error, err} -> {:halt, {:error, err, acc}}
+          {:error, err} ->
+            trace = acc |> Enum.reverse() |> get_trace(3)
+            {:halt, {:error, err, trace}}
         end
       end)
+  end
+
+  def get_trace(list, elements) do
+    last_elements_in_list = list |> Enum.take(-elements)
+
+    if length(list) > elements do
+      {:last_sequence_read, ["..."] ++ last_elements_in_list}
+    else
+      {:last_sequence_read, last_elements_in_list}
+    end
   end
 
   defp clean_sequence(rna_input) do
@@ -39,17 +55,10 @@ defmodule MRnaProcessor2 do
     |> String.upcase()
   end
 
-  defp validate_chars(sequence) do
-    case Regex.match?(~r/^[UAGC]*$/, sequence) do
+  defp validate_codon(sequence) do
+    case Regex.match?(~r/^[UAGC]*$/, sequence) && String.length(sequence) === 3 do
       true -> :ok
-      _ -> {:error, "Invalid DNA"}
-    end
-  end
-
-  defp validate_end(sequence) do
-    case String.length(sequence) do
-      3 -> :ok
-      _ -> {:error, "Unexpected end of gene"}
+      _ -> {:error, "Invalid DNA: #{sequence} is not a valid codon"}
     end
   end
 end

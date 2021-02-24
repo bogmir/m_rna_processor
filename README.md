@@ -7,7 +7,7 @@
  In the industry there is a standard to include metadata and comments to these files by adding lines prefixed with “>” (greater then) character. All data after that character until the end of the line can be ignored. 
 
  The remaining data in the input string may contain whitespace characters (space, tab, linefeed, Unicode whitespace) which have no semantic meaning and should be ignored.
- Apart from whitespace the string should only contain the four characters  A, U, G, C which may appear in upper or lowercase representation. 
+ Apart from whitespace the string should only contain the four characters *A, U, G, C* which may appear in upper or lowercase representation. 
  
  The function should process the string from the first position. 
  
@@ -20,9 +20,10 @@ Well, for starters I've been studying one of the rising stars of functional lang
 
 To end this section, I'll just copy the introductory paragraphs from Elixir's official [web page](https://elixir-lang.org/):
 
-```Elixir is a dynamic, functional language for building scalable and maintainable applications.
-Elixir leverages the Erlang VM, known for running low-latency, distributed, and fault-tolerant systems. Elixir is successfully used in web development, embedded software, data ingestion, and multimedia processing, across a wide range of industries.
-```
+> Elixir is a dynamic, functional language for building scalable and maintainable applications.
+
+> Elixir leverages the Erlang VM, known for running low-latency, distributed, and fault-tolerant systems. Elixir is successfully used in web development, embedded software, data ingestion, and multimedia processing, across a wide range of industries.
+
 
 ## Install Elixir
 
@@ -72,4 +73,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/rna_processor](https://hexdocs.pm/rna_processor).
-
