@@ -24,6 +24,12 @@ To end this section, I'll just copy the introductory paragraphs from Elixir's of
 
 > Elixir leverages the Erlang VM, known for running low-latency, distributed, and fault-tolerant systems. Elixir is successfully used in web development, embedded software, data ingestion, and multimedia processing, across a wide range of industries.
 
+## Implementation details
+
+The solution of the second exercise is based on the [Stream](https://elixir-lang.org/getting-started/enumerables-and-streams.html#streams) module.
+Streams are lazy, composable enumerables so all the functions in the Stream modules are also lazy (whereas the functions in Enum are eager).
+
+In the MRnaProcessor2 module, *do_get_gene* is the workhorse function. Stream composition allows to build up the computation which is eventually applied on the Enum reducer function. Codons (the building blocks of a gene), or chunks of three letters, are accumulated one by one in a list until a STOP codon is encountered. Additionally, a counter is passed along in the accumulator to display the position of the currently processed gene. As gene has been "captured", it may be validated, and a secondary effect (such as a DB write) may ocurr. In this implementation, the gene or a captured error and a trace with the last few captured codons will be logged to the console.
 
 ## Install Elixir
 
@@ -47,7 +53,24 @@ Once you have Elixir installed, you can check its version by running:
 ```bash
 $ elixir --version.
 ```
-## Implementation details
+
+## Running the main module
+
+To compile all the modules in the project and start a BEAM (the Erlang VM) instance:
+
+```bash
+$ iex -S mix
+```
+
+To launch the main module, from the iex (Interactive Elixir) console: 
+```elixir
+iex(1)> MRnaProcessor.get_genes("AAAGGGAUG UGA")
+```
+or: 
+
+```elixir
+iex(2)> MRnaProcessor2.get_genes("./dataset/refMrna.fa.txt")
+```
 
 ## Running tests
 
