@@ -1,8 +1,7 @@
->NM_001170833 1  #MRnaProcessor2.get_genes("./dataset/mrna-data.txt")
->NM_001170833 1  #MRnaProcessor2.get_genes("./dataset/refMrna.fa.corrected.txt")
+>NM_001170833 1  
 augagccuuucgcuccagcuugguggaaaaacaagaaacguuuaacuguuucgugaugagugacagagagaaaccaugugacaccaacgcguguccaacaaucgggcugaguaa
 >NM_001293063 1
 uuucaugug cccaaaauc cucucaggc auggucaag cccauccuu uuccacaac
 acagccuag
 augugcgag gacugcugu gcugcaacu guuuuccgu ccuuucuuu cacuaaaaauag
-ggggggggggggaug ugaaaa
+gggCUC

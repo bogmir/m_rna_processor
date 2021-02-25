@@ -1,13 +1,14 @@
 defmodule MRnaProcessor2 do
 
-  @stop_codons ["UAA", "UAG", "UGA"]
+  @stop_codons ~w<UAA UAG UGA>
+
   def get_genes(input_data_url) do
     IO.puts("Starts processing input...")
 
     case do_get_genes(input_data_url) do
       {_, []} -> {:ok, "Process ended successfully."}
       {_, list = [_ | _]} ->
-        trace = list |> Enum.reverse() |> get_trace(3)
+        trace = list |> Enum.reverse() |> get_trace()
         {:error, "Unexpected end of gene", trace}
       {:error, err, trace} -> {:error, err, trace}
     end
@@ -38,7 +39,7 @@ defmodule MRnaProcessor2 do
       end)
   end
 
-  def get_trace(list, elements) do
+  def get_trace(list, elements\\3) do
     last_elements_in_list = list |> Enum.take(-elements)
 
     if length(list) > elements do

@@ -39,7 +39,8 @@ defmodule MRnaProcessor1Test do
   end
 
   test "Invalid DNA" do
-    assert MRnaProcessor1.get_genes("UUUGGY") === {:error, "Invalid DNA"}
+    input = "UUUGGY"
+    assert MRnaProcessor1.get_genes(input) === {:error, "Invalid DNA: #{input}"}
   end
 
   test "Unexpected end of gene" do
