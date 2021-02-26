@@ -52,7 +52,6 @@ defmodule MRnaProcessor2 do
   end
 
   defp validate_characters(sequence) do
-
     case res = Regex.run(~r/[^UAGC]/, sequence) do
       nil -> :ok
       _ -> {:error, "Invalid DNA: #{res}"}
