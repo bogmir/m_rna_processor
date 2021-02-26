@@ -1,7 +1,8 @@
+auggug
 >NM_001170833 1  
 augagccuuucgcuccagcuugguggaaaaacaagaaacguuuaacuguuucgugaugagugacagagagaaaccaugugacaccaacgcguguccaacaaucgggcugaguaa
 >NM_001293063 1
 uuucaugug cccaaaauc cucucaggc auggucaag cccauccuu uuccacaac
-acagccuag
+acagccuaguag
 augugcgag gacugcugu gcugcaacu guuuuccgu ccuuucuuu cacuaaaaauag
-gggCUC
+gggCUCuagaaaaa

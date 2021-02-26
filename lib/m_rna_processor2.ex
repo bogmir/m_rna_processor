@@ -9,7 +9,7 @@ defmodule MRnaProcessor2 do
       {_, []} -> {:ok, "Process ended successfully."}
       {_, list = [_ | _]} ->
         trace = list |> Enum.reverse() |> get_trace()
-        {:error, "Unexpected end of gene", trace}
+        {:error, "Unexpected end of gene: STOP codon missing", trace}
       {:error, err, trace} -> {:error, err, trace}
     end
   end
@@ -21,7 +21,7 @@ defmodule MRnaProcessor2 do
     |> Stream.chunk_every(3)
     |> Stream.map(&Enum.join/1)
     |> Enum.reduce_while({1, []}, fn codon, {counter, acc} ->
-        with :ok <- validate_codon(codon)
+        with :ok <- validate_characters(codon), :ok <- validate_length(codon)
         do
           case codon in @stop_codons do
             true -> #gene may be captured at this point
@@ -39,15 +39,10 @@ defmodule MRnaProcessor2 do
       end)
   end
 
-  def get_trace(list, elements\\3) do
-    last_elements_in_list = list |> Enum.take(-elements)
-
-    if length(list) > elements do
-      {:last_sequence_read, ["..."] ++ last_elements_in_list}
-    else
-      {:last_sequence_read, last_elements_in_list}
-    end
-  end
+  def get_trace(list, elements \\ 3)
+  def get_trace(list, elements) when length(list) > elements,
+    do: {:last_sequence_read, ["..."] ++ Enum.take(list, -elements)}
+  def get_trace(list, elements), do: {:last_sequence_read, Enum.take(list, -elements)}
 
   defp clean_sequence(rna_input) do
     rna_input
@@ -56,10 +51,18 @@ defmodule MRnaProcessor2 do
     |> String.upcase()
   end
 
-  defp validate_codon(sequence) do
-    case Regex.match?(~r/^[UAGC]*$/, sequence) && String.length(sequence) === 3 do
+  defp validate_characters(sequence) do
+
+    case res = Regex.run(~r/[^UAGC]/, sequence) do
+      nil -> :ok
+      _ -> {:error, "Invalid DNA: #{res}"}
+    end
+  end
+
+  defp validate_length(sequence) do
+    case String.length(sequence) == 3 do
       true -> :ok
-      _ -> {:error, "Invalid DNA: #{sequence} is not a valid codon"}
+      _ -> {:error, "Unexpected end of gene: #{sequence} is not a valid codon"}
     end
   end
 end
