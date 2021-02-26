@@ -14,9 +14,9 @@
  The string contains none, one or more “genes” (sequences of codons terminated by a stop codon) and possible “noise”, a sequence of stop codons. The function should return the genes, each consisting of a sequence of codons and terminated by a single “stop codon”. More stop codons should be treated as noise and be discarded.
 
 ## Elixir: the programming language of choice
-The obvious question is why Elixir? Why not use Java or Javascript, two of the languages I'm more experienced in?
+The obvious question is why Elixir? Why not Java or Javascript, two of the languages I'm more experienced in?
 
-Well, for starters I've been studying one of the rising stars of functional languages and I found that it's very fast (built on top of Erlang VM, if you've never heard of it, it powers WhatsApp's & Discord's high availability & performance), more concise (syntax inspired by Ruby) while amazingly feature-rich, flexible and expressive (Clojure, Python, Lisp also served as inspiration among others). Now, I'm relatively new to Elixir (I picked it up in autumn 2020), but the more I'm learning the more impressed I am and the more I love the language. Immutability is the most obvious benefit. But there are many features that make Elixir great: [pattern matching](https://elixir-lang.org/getting-started/pattern-matching.html), [the pipe operator](https://elixir-lang.org/getting-started/enumerables-and-streams.html#the-pipe-operator), [lazy operations with Streams](https://elixir-lang.org/getting-started/enumerables-and-streams.html#streams), [sigils](https://elixir-lang.org/getting-started/sigils.html), [metaprogramming](https://elixir-lang.org/getting-started/meta/quote-and-unquote.html), to name just a few. Yes, as you might have already noticed that I would definitely describe my encounter and my journey with Elixir in terms of passion and affection, just like these senior programmers do [here](https://exercism.io/tracks/elixir/mentors).
+Well, for starters I've been studying one of the latest rising stars of functional languages and I found that it's very fast (built on top of Erlang VM - if you've never heard of it, it enables WhatsApp & Discord's high availability & performance), more concise (syntax inspired by Ruby) while amazingly feature-rich, flexible and expressive (Clojure, Python, Lisp also served as inspiration among others). Now, I'm relatively new to Elixir (I picked it up in autumn 2020), but the more I'm learning the more impressed I am and the more I love the language. Immutability is the most obvious benefit. But there are many features that make Elixir great: [pattern matching](https://elixir-lang.org/getting-started/pattern-matching.html), [the pipe operator](https://elixir-lang.org/getting-started/enumerables-and-streams.html#the-pipe-operator), [lazy operations with Streams](https://elixir-lang.org/getting-started/enumerables-and-streams.html#streams), [sigils](https://elixir-lang.org/getting-started/sigils.html), [metaprogramming](https://elixir-lang.org/getting-started/meta/quote-and-unquote.html), to name just a few. Yes, most of these features are staples in other languages, but I find their availability and ease of use quite unique. As you might have already noticed that I'm not holding back from describing my encounter and my journey with Elixir in terms of passion and affection, just like these senior programmers do [here](https://exercism.io/tracks/elixir/mentors).
 
 To end this section, I'll just copy the introductory paragraphs from Elixir's official [web page](https://elixir-lang.org/):
 
@@ -24,6 +24,12 @@ To end this section, I'll just copy the introductory paragraphs from Elixir's of
 
 > Elixir leverages the Erlang VM, known for running low-latency, distributed, and fault-tolerant systems. Elixir is successfully used in web development, embedded software, data ingestion, and multimedia processing, across a wide range of industries.
 
+## Implementation details
+
+The solution of the second exercise is based on the [Stream](https://elixir-lang.org/getting-started/enumerables-and-streams.html#streams) module.
+Streams are lazy, composable enumerables so all the functions in the Stream modules are also lazy (whereas the functions in Enum are eager).
+
+In the MRnaProcessor2 module, *do_get_gene* is the workhorse function. Stream composition allows to build up the computation which is eventually applied on the Enum reducer function. In the reducer, codons (the building blocks of a gene), or chunks of three letters, are accumulated one by one in a list until a STOP codon is encountered. Additionally, a counter is passed along in the accumulator to compute the position of the currently processed gene. As a gene has been "captured", it is validated and then a secondary effect (such as a DB write) may ocurr. In this implementation, the captured gene or an error and a trace with the last few processed codons will be logged to the console.
 
 ## Install Elixir
 
@@ -47,7 +53,24 @@ Once you have Elixir installed, you can check its version by running:
 ```bash
 $ elixir --version.
 ```
-## Implementation details
+
+## Running the main module
+
+To compile all the modules in the project and start a BEAM (the Erlang VM) instance:
+
+```bash
+$ iex -S mix
+```
+
+To launch the main module, from the iex (Interactive Elixir) console: 
+```elixir
+iex(1)> MRnaProcessor.get_genes("AAAGGGAUG UGA")
+```
+or: 
+
+```elixir
+iex(2)> MRnaProcessor2.get_genes("./dataset/refMrna.fa.txt")
+```
 
 ## Running tests
 
