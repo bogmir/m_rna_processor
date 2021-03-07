@@ -17,7 +17,7 @@ defmodule MRnaProcessor1 do
     rna_input
     |> String.replace(~r/>(.)*$/m, "") # removes comments
     |> String.replace(~r/\s/, "") # removes whitespace
-    |> String.upcase()
+    |> String.upcase() # all nucleotides in uppercase
   end
 
   defp validate_length(sequence) do
@@ -35,23 +35,26 @@ defmodule MRnaProcessor1 do
     end
   end
 
+  #sequence traversal starts
   defp do_get_genes(sequence), do: do_get_genes(sequence, [], [])
-  defp do_get_genes(<<codon::binary-size(3)>> <> rest, [], acc_genes) when codon in @stop_codons do
-    do_get_genes(rest, [], acc_genes)
-  end
-  defp do_get_genes(<<codon::binary-size(3)>> <> rest, acc, acc_genes) when codon in @stop_codons do
-    do_get_genes(rest, [], [["STOP(#{codon})" | acc] | acc_genes])
-  end
 
   defp do_get_genes(<<codon::binary-size(3)>> <> rest, acc, acc_genes) do
-    do_get_genes(rest, [codon | acc], acc_genes)
+    case codon in @stop_codons do
+      true ->
+        #when STOP codon add to total accumulator and reset current accumulator
+        if acc != [],
+          do: do_get_genes(rest, [], acc_genes ++ [acc ++ ["STOP(#{codon})"]]),
+          #when STOP codon and current gene accumulator is empty, skip codon
+          else: do_get_genes(rest, [], acc_genes)
+      #add codon only to current accumulator
+      false -> do_get_genes(rest, acc ++ [codon], acc_genes)
+    end
   end
 
-  defp do_get_genes("", _, []), do: {:error, "Unexpected end of gene"}
-  defp do_get_genes("", _, acc_genes) do
-    acc_genes
-    |> Enum.reverse()
-    |> Enum.map(&Enum.reverse/1)
+  #sequence traversal ends
+  defp do_get_genes("", acc, acc_genes) do
+    if length(acc) > 0,
+      do: {:error, "Unexpected end of gene"},
+    else: {:ok, acc_genes}
   end
-
 end

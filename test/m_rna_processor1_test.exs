@@ -4,13 +4,13 @@ defmodule MRnaProcessor1Test do
   test "get one gene" do
     input = "uuucaugug cccaaaauc cucucaggc acagccuag"
     assert MRnaProcessor1.get_genes(input)
-      == [["UUU", "CAU", "GUG", "CCC", "AAA", "AUC", "CUC", "UCA", "GGC", "ACA", "GCC", "STOP(UAG)"]]
+      == {:ok, [["UUU", "CAU", "GUG", "CCC", "AAA", "AUC", "CUC", "UCA", "GGC", "ACA", "GCC", "STOP(UAG)"]]}
   end
 
   test "get two genes" do
     input = "uuucaugug cccaaaauc acagccuag cucucaggc acagccuag"
     assert MRnaProcessor1.get_genes(input)
-      == [["UUU", "CAU", "GUG", "CCC", "AAA", "AUC", "ACA", "GCC", "STOP(UAG)"], ["CUC", "UCA", "GGC", "ACA", "GCC", "STOP(UAG)"]]
+      == {:ok, [["UUU", "CAU", "GUG", "CCC", "AAA", "AUC", "ACA", "GCC", "STOP(UAG)"], ["CUC", "UCA", "GGC", "ACA", "GCC", "STOP(UAG)"]]}
   end
 
   test "get two genes with a commentary in between" do
@@ -18,7 +18,7 @@ defmodule MRnaProcessor1Test do
     >commentary
     cucucaggc acagccuag"
     assert MRnaProcessor1.get_genes(input)
-      == [["UUU", "CAU", "GUG", "CCC", "AAA", "AUC", "ACA", "GCC", "STOP(UAG)"], ["CUC", "UCA", "GGC", "ACA", "GCC", "STOP(UAG)"]]
+      == {:ok, [["UUU", "CAU", "GUG", "CCC", "AAA", "AUC", "ACA", "GCC", "STOP(UAG)"], ["CUC", "UCA", "GGC", "ACA", "GCC", "STOP(UAG)"]]}
   end
 
   test "remove 'noise' codons from gene" do
@@ -26,7 +26,7 @@ defmodule MRnaProcessor1Test do
     uuucaugug cccaaaauc acagccUAAuagUAAUGA
     cucucaggc acagccuag"
     assert MRnaProcessor1.get_genes(input)
-      == [["UUU", "CAU", "GUG", "CCC", "AAA", "AUC", "ACA", "GCC", "STOP(UAA)"], ["CUC", "UCA", "GGC", "ACA", "GCC", "STOP(UAG)"]]
+      == {:ok, [["UUU", "CAU", "GUG", "CCC", "AAA", "AUC", "ACA", "GCC", "STOP(UAA)"], ["CUC", "UCA", "GGC", "ACA", "GCC", "STOP(UAG)"]]}
   end
 
   test "invalid input length" do
@@ -43,8 +43,11 @@ defmodule MRnaProcessor1Test do
     assert MRnaProcessor1.get_genes(input) === {:error, "Invalid DNA: #{input}"}
   end
 
-  test "Unexpected end of gene" do
+  test "Unexpected end of gene when no gene captured" do
     assert MRnaProcessor1.get_genes("augaaa") === {:error, "Unexpected end of gene"}
   end
 
+  test "Unexpected end of gene when gene already captured" do
+    assert MRnaProcessor1.get_genes("uuucaugug cccaaaauc acagccuag cucucaggc acagccuag augaaa") === {:error, "Unexpected end of gene"}
+  end
 end
