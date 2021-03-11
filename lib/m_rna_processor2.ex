@@ -14,7 +14,7 @@ defmodule MRnaProcessor2 do
     end
   end
 
-  def do_get_genes(input_data_url) do
+  defp do_get_genes(input_data_url) do
     File.stream!(input_data_url)
     |> Stream.map(&clean_sequence/1)
     |> Stream.flat_map(&String.codepoints/1)
@@ -39,10 +39,10 @@ defmodule MRnaProcessor2 do
       end)
   end
 
-  def get_trace(list, elements \\ 3)
-  def get_trace(list, elements) when length(list) > elements,
+  defp get_trace(list, elements \\ 3)
+  defp get_trace(list, elements) when length(list) > elements,
     do: {:last_sequence_read, ["..."] ++ Enum.take(list, -elements)}
-  def get_trace(list, elements), do: {:last_sequence_read, Enum.take(list, -elements)}
+  defp get_trace(list, elements), do: {:last_sequence_read, Enum.take(list, -elements)}
 
   defp clean_sequence(rna_input) do
     rna_input
