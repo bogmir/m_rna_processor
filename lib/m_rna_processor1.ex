@@ -3,9 +3,7 @@ defmodule MRnaProcessor1 do
   @stop_codons ["UAA", "UAG", "UGA"]
 
   def get_genes(rna_input) do
-    sequence =
-      rna_input
-      |> clean_sequence
+    sequence = clean_sequence(rna_input)
 
     with :ok <- validate_length(sequence), :ok <- validate_chars(sequence)
     do
@@ -21,18 +19,17 @@ defmodule MRnaProcessor1 do
   end
 
   defp validate_length(sequence) do
-    valid = sequence
-    |> String.length
-    |> rem(3) == 0
+    valid_length = sequence |> String.length |> rem(3) == 0
 
-    if valid, do: :ok, else: {:error, "Invalid input length"}
+    if valid_length,
+      do: :ok,
+      else: {:error, "Invalid input length"}
   end
 
   defp validate_chars(sequence) do
-    case Regex.match?(~r/^[UAGC]*$/, sequence) do
-      true -> :ok
-      _ -> {:error, "Invalid DNA: #{sequence}"}
-    end
+    if Regex.match?(~r/^[UAGC]*$/, sequence),
+      do: :ok,
+      else: {:error, "Invalid DNA: #{sequence}"}
   end
 
   #sequence traversal starts
