@@ -69,7 +69,7 @@ iex(1)> MRnaProcessor.get_genes("AAAGGGAUG UGA")
 or: 
 
 ```elixir
-iex(2)> MRnaProcessor2.get_genes("./dataset/refMrna.fa.txt")
+iex(2)> MRnaProcessor.get_genes("./dataset/refMrna.fa.txt")
 ```
 
 ## Running tests
